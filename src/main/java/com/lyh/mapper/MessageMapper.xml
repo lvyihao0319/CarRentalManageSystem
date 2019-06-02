@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyh.mapper.MessageMapper">
+
+	<resultMap type="com.lyh.bean.Message" id="MessageResult">
+		<result property="id" column="id" />
+		<result property="content" column="content" />
+		<result property="createDateTime" column="createDateTime" />
+		<result property="userId" column="userId" />
+		
+		<association property="user" column="userId" select="com.lyh.mapper.UserMapper.findById"></association>
+	</resultMap>
+	
+	<insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.lyh.bean.Message">
+		insert into t_message values(null,#{content},#{createDateTime},#{userId})
+	</insert>
+	
+	<select id="list" parameterType="Map" resultMap="MessageResult">
+		select * from t_message
+		
+		order by id DESC
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="getTotal" parameterType="Map" resultType="Integer">
+		select	count(*) from t_message
+		
+	</select>
+	
+	<delete id="delete" parameterType="Integer">
+		delete from t_message where id=#{id}
+	</delete>
+</mapper>

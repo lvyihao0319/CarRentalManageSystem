@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyh.mapper.CuiHaiMapper">
+	<resultMap type="com.lyh.bean.CuiHai" id="CuiHaiResult">
+		<result property="id" column="id" />
+		<result property="userSubId" column="userSubId" />
+		<result property="jierenId" column="jierenId" />
+		<result property="carId" column="carId" />
+		<result property="createDateTime" column="createDateTime" />
+		
+		<association property="userSub" column="userSubId" select="com.lyh.mapper.UserSubMapper.findById"></association>
+		<association property="jieren" column="jierenId" select="com.lyh.mapper.UserMapper.findById"></association>
+		<association property="car" column="carId" select="com.lyh.mapper.CarMapper.findById"></association>
+	</resultMap>
+	
+	<delete id="deleteBySubId" parameterType="Integer">
+		delete from t_cui_hai where userSubId=#{subId}
+	</delete>
+	
+	<select id="findBySubId" parameterType="Integer" resultMap="CuiHaiResult">
+		select * from t_cui_hai where userSubId=#{subId}
+	</select>
+	
+	<insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.lyh.bean.CuiHai">
+		insert into t_cui_hai values(null,#{userSubId},#{jierenId},#{carId},#{createDateTime})
+	</insert>
+	
+	<select id="list" parameterType="Map" resultMap="CuiHaiResult">
+		select * from t_cui_hai
+		<where>
+			<if test="jierenId!=null and jierenId!='' ">
+		 		and jierenId =  #{jierenId} 
+			</if>
+		</where>
+		order by id DESC
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="getTotal" parameterType="Map" resultType="Integer">
+		select	count(*) from t_cui_hai
+		<where>
+			<if test="jierenId!=null and jierenId!='' ">
+		 		and jierenId =  #{jierenId} 
+			</if>
+		</where>
+	</select>
+</mapper>

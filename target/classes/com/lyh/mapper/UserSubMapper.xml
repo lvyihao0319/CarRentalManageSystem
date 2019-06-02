@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyh.mapper.UserSubMapper">
+	<resultMap type="com.lyh.bean.UserSub" id="UserSubResult">
+		<result property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="carId" column="carId" />
+		<result property="subDateTime" column="subDateTime" />
+		<result property="returnDateTime" column="returnDateTime" />
+		<result property="type" column="type" />
+		
+		
+		<association property="user" column="userId" select="com.lyh.mapper.UserMapper.findById"></association>
+		<association property="car" column="carId" select="com.lyh.mapper.CarMapper.findById"></association>
+		
+	</resultMap>
+	
+	<insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="com.lyh.bean.UserSub">
+		insert into t_user_sub values(null,#{userId},#{carId},#{subDateTime},#{returnDateTime},#{type})
+	</insert>
+	
+	<select id="list" parameterType="Map" resultMap="UserSubResult">
+		select * from t_user_sub
+		<where>
+			<if test="date1!=null and date1!='' ">
+		 		and subDateTime &gt;= #{date1} 
+			</if>
+			<if test="date2!=null and date2!='' ">
+		 		and subDateTime &lt;=  #{date2} 
+			</if>
+			<if test="userId!=null and userId!='' ">
+		 		and userId =  #{userId} 
+			</if>
+		</where>
+		order by id DESC
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="getTotal" parameterType="Map" resultType="Integer">
+		select	count(*) from t_user_sub
+		<where>
+			<if test="date1!=null and date1!='' ">
+		 		and subDateTime &gt;= #{date1} 
+			</if>
+			<if test="date2!=null and date2!='' ">
+		 		and subDateTime &lt;=  #{date2} 
+			</if>
+			<if test="userId!=null and userId!='' ">
+		 		and userId =  #{userId} 
+			</if>
+		</where>
+	</select>
+	
+	<select id="findById" parameterType="Integer" resultMap="UserSubResult">
+		select * from t_user_sub where id=#{id}
+	</select>
+	
+	<update id="update" parameterType="com.lyh.bean.UserSub">
+		update t_user_sub
+		<set>
+			<if test="returnDateTime!=null ">
+				returnDateTime=#{returnDateTime},
+			</if>
+			<if test="type!=null ">
+				type=#{type},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+</mapper>
